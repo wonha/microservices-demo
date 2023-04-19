@@ -38,6 +38,7 @@ If you’re using this demo, please **★Star** this repository to show your int
 # gcloud services enable container.googleapis.com --project ${PROJECT_ID}
 
 gcloud config set compute/region us-central1
+gcloud config set compute/zone us-central1-b
 gcloud config get-value project
 gcloud config get compute/region
 ```
@@ -74,13 +75,14 @@ gcloud container clusters create-auto onlineboutique \
 
 gcloud container clusters create onlineboutique \
     --project="$(gcloud config get-value project)" --zone="$(gcloud config get compute/region)" \
-    --machine-type=e2-standard-2 --num-nodes=4
+    --machine-type=e2-standard-2 --num-nodes=2
 ```
 
 4. **Deploy the sample app to the cluster.**
 
 ```sh
-kubectl apply -f ./release/kubernetes-manifests.yaml
+kubectl apply -f ./release/kubernetes-manifests-l4.yaml
+kubectl apply -f ./release/kubernetes-manifests-l4-rbs.yaml
 ```
 
 5. **Wait for the Pods to be ready.**
@@ -129,7 +131,7 @@ EXTERNAL-IP
 #    --project=${PROJECT_ID} --zone=${ZONE}
 
 gcloud container clusters delete onlineboutique \
-    --project="$(gcloud config get-value project)" --zone="$(gcloud config get compute/region)" \
+    --project="$(gcloud config get-value project)" --zone="$(gcloud config get compute/region)"
 ```
 
 ## Use Terraform to provision a GKE cluster and deploy Online Boutique
