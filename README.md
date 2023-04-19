@@ -33,14 +33,18 @@ If you’re using this demo, please **★Star** this repository to show your int
 
 1. **[Create a Google Cloud Platform project](https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project)** or use an existing project. Set the `PROJECT_ID` environment variable and ensure the Google Kubernetes Engine and Cloud Operations APIs are enabled.
 
-```
-PROJECT_ID="<your-project-id>"
-gcloud services enable container.googleapis.com --project ${PROJECT_ID}
+```sh
+# PROJECT_ID="<your-project-id>"
+# gcloud services enable container.googleapis.com --project ${PROJECT_ID}
+
+gcloud config set compute/region us-central1
+gcloud config get-value project
+gcloud config get compute/region
 ```
 
 2. **Clone this repository.**
 
-```
+```sh
 git clone https://github.com/GoogleCloudPlatform/microservices-demo.git
 cd microservices-demo
 ```
@@ -51,36 +55,43 @@ cd microservices-demo
 overview](https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview)
 to learn more):
 
-```
-REGION=us-central1
+```sh
+#REGION=us-central1
+#gcloud container clusters create-auto onlineboutique \
+#    --project=${PROJECT_ID} --region=${REGION}
+
 gcloud container clusters create-auto onlineboutique \
-    --project=${PROJECT_ID} --region=${REGION}
+    --project="$(gcloud config get-value project)" --zone="$(gcloud config get compute/region)" \
 ```
 
 - GKE Standard mode:
 
-```
-ZONE=us-central1-b
+```sh
+#ZONE=us-central1-b
+#gcloud container clusters create onlineboutique \
+#    --project=${PROJECT_ID} --zone=${ZONE} \
+#    --machine-type=e2-standard-2 --num-nodes=4
+
 gcloud container clusters create onlineboutique \
-    --project=${PROJECT_ID} --zone=${ZONE} \
+    --project="$(gcloud config get-value project)" --zone="$(gcloud config get compute/region)" \
     --machine-type=e2-standard-2 --num-nodes=4
 ```
 
 4. **Deploy the sample app to the cluster.**
 
-```
+```sh
 kubectl apply -f ./release/kubernetes-manifests.yaml
 ```
 
 5. **Wait for the Pods to be ready.**
 
-```
+```sh
 kubectl get pods
 ```
 
 After a few minutes, you should see:
 
-```
+```sh
 NAME                                     READY   STATUS    RESTARTS   AGE
 adservice-76bdd69666-ckc5j               1/1     Running   0          2m58s
 cartservice-66d497c6b7-dp5jr             1/1     Running   0          2m59s
@@ -98,13 +109,13 @@ shippingservice-6ccc89f8fd-v686r         1/1     Running   0          2m58s
 
 7. **Access the web frontend in a browser** using the frontend's `EXTERNAL_IP`.
 
-```
+```sh
 kubectl get service frontend-external | awk '{print $4}'
 ```
 
 *Example output - do not copy*
 
-```
+```sh
 EXTERNAL-IP
 <your-ip>
 ```
@@ -113,9 +124,12 @@ EXTERNAL-IP
 
 8. [Optional] **Clean up**:
 
-```
+```sh
+#gcloud container clusters delete onlineboutique \
+#    --project=${PROJECT_ID} --zone=${ZONE}
+
 gcloud container clusters delete onlineboutique \
-    --project=${PROJECT_ID} --zone=${ZONE}
+    --project="$(gcloud config get-value project)" --zone="$(gcloud config get compute/region)" \
 ```
 
 ## Use Terraform to provision a GKE cluster and deploy Online Boutique
